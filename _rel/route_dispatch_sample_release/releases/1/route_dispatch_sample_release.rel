@@ -1,0 +1,9 @@
+{release,{"route_dispatch_sample_release","1"},
+         {erts,"6.2"},
+         [{kernel,"3.0.3"},
+          {stdlib,"2.2"},
+          {ranch,"1.1.0"},
+          {crypto,"3.4.1"},
+          {cowlib,"1.0.1"},
+          {cowboy,"1.0.1"},
+          {route_dispatch_sample,"0.1.0"}]}. 
