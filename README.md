@@ -14,4 +14,5 @@ where Method is a bitstring representing the METHOD header of an http request an
 
 #### erlang.mk
  > DEPS = cards
+ >
  > dep_cards = https://github.com/psandeepunni/cowboy-automatic-route-dispatcher.git master
