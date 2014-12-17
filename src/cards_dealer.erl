@@ -35,8 +35,10 @@ handle(Req, State=#state{}) ->
   Module = get_module(Controller),
   Func = get_function(Action),
   {Method, Req1} = cowboy_req:method(Req),
-  {Status,Req2} = apply(Module, Func, [Method,Req1]),
-  {Status, Req2, State}.
+  Req2 = cowboy_req:set_resp_header(<<"access-control-allow-methods">>, <<"GET, POST, PUT, DELETE, OPTIONS">>, Req1),
+  Req3 = cowboy_req:set_resp_header(<<"access-control-allow-origin">>, <<"*">>, Req2),
+  {Status,Req4} = apply(Module, Func, [Method,Req3]),
+  {Status, Req4, State}.
 
 terminate(_Reason, _Req, _State) ->
   ok.
