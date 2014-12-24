@@ -11,15 +11,20 @@
 init(_, Req, _Opts) ->
   {ok, Req, #state{}}.
 
-get_module(Controller) ->
-  Part = <<"_controller">>,
-  ModuleName = <<Controller/binary,Part/binary>>,
+  
+get_module({ModuleName}) ->
   case binary_to_existing_atom(ModuleName, utf8) of
     {'EXIT', {badarg,_}} ->
       binary_to_atom(ModuleName, utf8);
     _ ->
       binary_to_existing_atom(ModuleName, utf8)
-  end.
+  end;
+get_module(controller) ->
+  get_module({<<"httproot">>});
+get_module(Controller) ->
+  Part = application:get_env(application:get_application(), handle_tail, <<"controller">>),
+  ModuleName = <<Controller/binary,Part/binary>>,
+  get_module({ModuleName}).
 
 get_function(Action) ->
   case catch binary_to_existing_atom(Action, utf8) of
@@ -33,8 +38,8 @@ response(<<"OPTIONS">>, Req, State) ->
   {Status, Req1} = cowboy_req:reply(200,[{<<"Access-Control-Allow-Headers">>,<<"origin, x-csrftoken, content-type, accept">>}],<<"">>,Req),
   {Status, Req1, State};
 response(Method, Req, State) ->
-  {Controller,_} = cowboy_req:binding(controller,Req),
-  {Action,_} = cowboy_req:binding(action,Req),
+  {Controller,_} = cowboy_req:binding(controller,Req,controller),
+  {Action,_} = cowboy_req:binding(action,Req,<<"index">>),
   Module = get_module(Controller),
   Func = get_function(Action),
   {Status, Req1} = apply(Module, Func, [Method,Req]),
