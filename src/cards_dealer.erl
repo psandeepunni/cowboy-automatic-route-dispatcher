@@ -22,7 +22,7 @@ get_module({ModuleName}) ->
 get_module(controller) ->
   get_module({<<"httproot">>});
 get_module(Controller) ->
-  Part = application:get_env(application:get_application(), handle_tail, <<"controller">>),
+  Part = application:get_env(cards, handle_tail, <<"_controller">>),
   ModuleName = <<Controller/binary,Part/binary>>,
   get_module({ModuleName}).
 
