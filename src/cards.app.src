@@ -1,0 +1,14 @@
+{application, cards,
+ [
+  {description, "Rest Framework on Cowboy"},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  cowboy,
+                  sync
+                 ]},
+  {mod, { cards_app, []}},
+  {env, []}
+ ]}.
