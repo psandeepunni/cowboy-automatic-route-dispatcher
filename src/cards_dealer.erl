@@ -18,15 +18,17 @@ init(_, Req, _Opts) ->
 %% @end
 %%--------------------------------------------------------------------
 
-get_module(Controller) ->
-  Part = <<"_controller">>,
-  ModuleName = <<Controller/binary,Part/binary>>,
+get_module({ModuleName}) ->
   case binary_to_existing_atom(ModuleName, utf8) of
     {'EXIT', {badarg,_}} ->
       binary_to_atom(ModuleName, utf8);
     _ ->
       binary_to_existing_atom(ModuleName, utf8)
-  end.
+  end;
+get_module(Controller) ->
+  Part = application:get_env(cards, handle_tail, <<"_controller">>),
+  ModuleName = <<Controller/binary,Part/binary>>,
+  get_module({ModuleName}).
 
 %%--------------------------------------------------------------------
 %% @doc Gets/Extracts the Function From Module in Request path.
@@ -130,8 +132,8 @@ get_policies(Controller, Action) ->
 
 handle(Req, State=#state{}) ->
   {Method, Req1} = cowboy_req:method(Req),
-  {Controller,_} = cowboy_req:binding(controller,Req1),
-  {Action,_} = cowboy_req:binding(action,Req1),
+  {Controller,_} = cowboy_req:binding(controller,Req1,<<"httproot">>),
+  {Action,_} = cowboy_req:binding(action,Req,<<"index">>),
   Req2 = cowboy_req:set_resp_header(<<"access-control-allow-methods">>, <<"GET, POST, PUT, DELETE, OPTIONS">>, Req1),
   Req3 = cowboy_req:set_resp_header(<<"access-control-allow-origin">>, <<"*">>, Req2),
   PolicyModuleNameList = get_policies(Controller, Action),
