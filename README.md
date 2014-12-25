@@ -25,15 +25,19 @@ Sample Controller Module
 -export([login/3]).
 -export([index/3]).
 
+%% Binds to Path /resource
 index(<<"GET">>, Req, Options) -> %% Options is the list of items returned after evaluation of access policy for the API
   cowboy_req:reply(200,[],<<"GET /resource">>,Req).
 
-actionone(<<"GET">>,Req, Options) -> %% <<"GET">>, Binds GET HTTP Method to end point /resource/actionone/
-  cowboy_req:reply(200,[],<<"GET actionone">>,Req).
+%% Binds to API endpoint GET /resource/actionone
+actionone(<<"GET">>,Req, Options) -> 
+  cowboy_req:reply(200,[],<<"GET /resource/actionone">>,Req).
 
-login(<<"POST">>, Req, Options) -> %% <<"POST">>, Binds POST HTTP Method to end point /resource/login/
+%% Binds to API endpoint POST /resource/login
+login(<<"POST">>, Req, Options) -> 
   cowboy_req:reply(200,[],<<"logged in successfully">>, Req).
-
+  
+%% Binds to API endpoint PUT /resource/actiontwo
 actiontwo(<<"PUT">>, Req, Options) ->
   cowboy_req:reply(200,[],<<"PUT actiontwo">>, Req).
 ```
