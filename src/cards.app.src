@@ -10,5 +10,6 @@
                   sync
                  ]},
   {mod, { cards_app, []}},
-  {env, []}
- ]}.
+  {env, [{cards, [{cowboy_port, 80}, {handle_tail, <<"driver">>}]}]}
+ ]
+}.
