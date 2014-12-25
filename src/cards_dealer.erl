@@ -112,7 +112,11 @@ get_action_policy(ok, Action, PolicyMap, Default) ->
 get_policies(Req, Controller, Action) ->
   Policies = policies:get(),
   {ok, DefaultPolicy} = maps:find(<<"default">>,Policies),
-  {ControllerPolicyFoundStatus, ControllerPolicyMap} = maps:find(Controller,Policies),
+  Result = maps:find(Controller,Policies),
+  {ControllerPolicyFoundStatus, ControllerPolicyMap} =  case Result of
+                                                          error -> {error, #{}};
+                                                          _ -> Result
+                                                        end,
   PolicyModuleNameList = get_action_policy(ControllerPolicyFoundStatus, Action, ControllerPolicyMap, DefaultPolicy),
   PolicyModuleNameList.
 
