@@ -12,7 +12,7 @@
 start(_StartType, _StartArgs) ->
   Dispatch = cowboy_router:compile([
     {'_', [
-      {"/:controller/:action/[:extras]", cards_dealer, []},
+      {"/:controller/[:action/:extras]", cards_dealer, []},
       {"/", cards_root_handler, []}
     ]}
   ]),

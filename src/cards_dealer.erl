@@ -15,7 +15,7 @@ init(_, Req, _Opts) ->
 handle(Req, State=#state{}) ->
   {Method, Req1} = cowboy_req:method(Req),
   {Controller,_} = cowboy_req:binding(controller, Req1),
-  {Action,_} = cowboy_req:binding(action, Req1),
+  {Action,_} = cowboy_req:binding(action, Req1, <<"index">>),
   io:format("Controller : ~p, Action : ~p, Method : ~p~n",[Controller,Action,Method]),
   Req2 = cowboy_req:set_resp_header(<<"access-control-allow-methods">>, <<"GET, POST, PUT, DELETE, OPTIONS">>, Req1),
   Req3 = cowboy_req:set_resp_header(<<"access-control-allow-origin">>, <<"*">>, Req2),
