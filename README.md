@@ -1,4 +1,4 @@
-cowboy-automatic-route-dispatcher-sync (CARDS)
+CARDS (cowboy automatic route dispatcher and sync)
 =================================
 
 A  Rest Framework based on rails with Sync. Cards use a simple filename based convention of defining controllers with automatic route binding. Cowboy is used as the internal http/s server.
