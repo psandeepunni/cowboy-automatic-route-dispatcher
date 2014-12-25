@@ -75,8 +75,8 @@ evaluate_access_policy(ok, [Policy|T], Req, Opts) ->
   evaluate_access_policy(Status, T, Req1, [Opts1 | Opts]).
 
 %%--------------------------------------------------------------------
-%% @doc Evaluate & Executes a Chain of access policy modules, and returns their results.
-%% @spec evaluate_access_policy(list(), term()) -> {atom(), term(), list()}
+%% @doc Evaluate and Executes a Chain of access policy modules, and returns their results.
+%% @spec execute_access_policy(list(), term()) -> {atom(), term(), list()}
 %% @end
 %%--------------------------------------------------------------------
 
