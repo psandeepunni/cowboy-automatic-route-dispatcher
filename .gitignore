@@ -5,7 +5,7 @@ deps
 *.plt
 erl_crash.dump
 ebin
-rel/cards
+rel
 .concrete/DEV_MODE
 .rebar
 .idea
