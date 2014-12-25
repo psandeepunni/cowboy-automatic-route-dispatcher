@@ -45,6 +45,9 @@ Req object is of type cowboy_req:req() type.
 
 #### Declaring Access Policies
 
+Access policies are declared in policies module. 
+Currently has support for chained access policies for end points.
+
 Sample policies.erl 
 
 ```erlang
@@ -57,7 +60,7 @@ get() ->
     <<"default">> => [false], %%% OPTIONAL, by default is [true], i.e all APIs are public
     <<"controllerOne">> => #{
       <<"default">> => [false], %%% OPTIONAL, by default is [true], i.e all APIs actions with base path /controllerOne will be public
-      <<"actionOne">> => [isOwnerOf]
+      <<"actionOne">> => [isOwnerOf, isLoggedIn]
     },
     <<"controllerThree">> => #{
       <<"getinfo">> => [isLoggedIn]
