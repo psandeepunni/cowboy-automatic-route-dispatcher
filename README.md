@@ -35,8 +35,7 @@ login(<<"POST">>, Req, Options) -> %% <<"POST">>, Binds POST HTTP Method to end 
   cowboy_req:reply(200,[],<<"logged in successfully">>, Req).
 
 actiontwo(<<"PUT">>, Req, Options) ->
-  io:format("GET actiontwo~n"),
-  cowboy_req:reply(200,[],<<"GET actiontwo">>, Req).
+  cowboy_req:reply(200,[],<<"PUT actiontwo">>, Req).
 ```
 Req object is of type cowboy_req:req() type.
 
