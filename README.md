@@ -1,13 +1,44 @@
 cowboy-automatic-route-dispatcher-sync (CARDS)
 =================================
 
-A Cowboy based simple router with Sync. Cards use a simple filename based convention of defining controllers.
+A  Rest Framework based on rails with Sync. Cards use a simple filename based convention of defining controllers with automatic route binding. Cowboy is used as the internal http/s server.
 
-```/``` will translate to ```httproot_controller:index(Method, Req, Options)```
-```/:controllerOne/``` will translate to ```controllerOne_controller:index(Method, Req, Options)```
-```/:controllerTwo/:actionOne``` will translate to ```controllerTwo_controller:actionOne(Method, Req, Options)```
-```/:controllerThree/:actionTwo/[:extras]``` will translate to ```controllerThree_controller.erl:actionTwo(Method, Req, Options)``` with the rest of the URL in ```extras``` binding,
+1. ```/``` will translate to ```httproot_controller:index(Method, Req, Options)```. 
+2. ```/:controllerOne/``` will translate to ```controllerOne_controller:index(Method, Req, Options)```.
+3. ```/:controllerTwo/:actionOne``` will translate to ```controllerTwo_controller:actionOne(Method, Req, Options)```.
+4. ```/:controllerThree/:actionTwo/[:extras]``` will translate to ```controllerThree_controller.erl:actionTwo(Method, Req, Options)``` with the rest of the URL in ```extras``` binding,
 where Method is a bitstring representing the METHOD header of an http request and Req is a cowboy Request Object.
+
+#### Defining View/Root Controllers
+
+A root controller is an erlang module with the naming convention of name_controller.erl. Adding a root controller, will result in automatic route binding of /name to the controller. Adding APIs, functions with arity 3, to this controller module, will result in automatic secondary path binding, such as, /name/function
+
+Sample Controller Module
+
+1. resource_controller.erl
+
+```erlang
+-module(resource_controller).
+
+-export([actionone/3]).
+-export([actiontwo/3]).
+-export([login/3]).
+-export([index/3]).
+
+index(<<"GET">>, Req, Options) -> %% Options is the list of items returned after evaluation of access policy for the API
+  cowboy_req:reply(200,[],<<"GET /resource">>,Req).
+
+actionone(<<"GET">>,Req, Options) -> %% <<"GET">>, Binds GET HTTP Method to end point /resource/actionone/
+  cowboy_req:reply(200,[],<<"GET actionone">>,Req).
+
+login(<<"POST">>, Req, Options) -> %% <<"POST">>, Binds POST HTTP Method to end point /resource/login/
+  cowboy_req:reply(200,[],<<"logged in successfully">>, Req).
+
+actiontwo(<<"PUT">>, Req, Options) ->
+  io:format("GET actiontwo~n"),
+  cowboy_req:reply(200,[],<<"GET actiontwo">>, Req).
+```
+Req object is of type cowboy_req:req() type.
 
 #### Declaring Access Policies
 
