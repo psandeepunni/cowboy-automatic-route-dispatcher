@@ -13,7 +13,7 @@ where Method is a bitstring representing the METHOD header of an http request an
 
 Sample policies.erl 
 
-<code>
+```erlang
 -module(policies).
 
 -export([get/0]).
@@ -29,11 +29,11 @@ get() ->
       <<"getinfo">> => [isLoggedIn]
     }
   }.
-</code>
+```
 
 Sample Policy Implementation isOwnerOf.erl
 
-<code>
+```erlang
 -module(isOwnerOf).
 -behaviour(cards_access_policy).
 
@@ -46,11 +46,11 @@ execute(Req) ->
       <<"sandeep">> -> {ok, Req2, [{owner,Value}]};
       _ -> {error, Req2, []}
     end.
-</code>
+```
 
 isLoggedIn.erl
 
-<code>
+```erlang
 -module(isLoggedIn).
 -behaviour(cards_access_policy).
 
@@ -65,7 +65,7 @@ execute(Req) ->
       {undefined, _} -> {ok, Req2, [{permitted,on},{loggedin,Value}]};
       {_,_} -> {error, Req2, []}
     end.
-</code>
+```
 
 #### Adding cards to your stack
 
