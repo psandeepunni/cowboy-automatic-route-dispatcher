@@ -1,6 +1,7 @@
 -module(cards_dealer).
 -behaviour(cowboy_http_handler).
 
+%% API
 -export([init/3]).
 -export([handle/2]).
 -export([terminate/3]).
@@ -11,11 +12,11 @@
 init(_, Req, _Opts) ->
   {ok, Req, #state{}}.
 
-%%%============================================================================
-%%% Function : get_module
-%%% Params : Controller/binary
-%%% Return : Controller/atom
-%%%============================================================================
+%%--------------------------------------------------------------------
+%% @doc Gets/Extracts the Controller Module Name from Request path.
+%% @spec get_module(binary()) -> atom()
+%% @end
+%%--------------------------------------------------------------------
 
 get_module(Controller) ->
   Part = <<"_controller">>,
@@ -27,11 +28,11 @@ get_module(Controller) ->
       binary_to_existing_atom(ModuleName, utf8)
   end.
 
-%%%============================================================================
-%%% Function : get_function
-%%% Params : Action/binary
-%%% Return : Action/atom
-%%%============================================================================
+%%--------------------------------------------------------------------
+%% @doc Gets/Extracts the Function From Module in Request path.
+%% @spec get_function(binary()) -> atom()
+%% @end
+%%--------------------------------------------------------------------
 
 get_function(Action) ->
   case catch binary_to_existing_atom(Action, utf8) of
@@ -41,11 +42,11 @@ get_function(Action) ->
       binary_to_existing_atom(Action,utf8)
   end.
 
-%%%==========================================================================================================
-%%% Function : response
-%%% Params : Status/atom, {Method/binary, Controller/binary, Action/binary}, Req/Term, Opts/Term, State/Term
-%%% Return : Action/atom
-%%%==========================================================================================================
+%%--------------------------------------------------------------------
+%% @doc Responds to an Http/Https request.
+%% @spec response(atom(),{binary(),binary(),binary()}, term(), term(), term()) -> {atom(), term(), term()}
+%% @end
+%%--------------------------------------------------------------------
 
 response(error, _, Req, _, State) ->
   {ok, Req1} = cowboy_req:reply(200,[],<<"you are not authorized to access the api">>, Req),
@@ -59,16 +60,11 @@ response(ok, {Method, Controller, Action}, Req, Opts, State) ->
   {Status, Req1} = apply(Module, Func, [Method, Req, Opts]),
   {Status, Req1, State}.
 
-%%%==========================================================================================================
-%%% Evaluate & Execute Chained Access Policies
-%%% Function : evaluate_access_policy
-%%% Params : Status/atom, PolicyList/list, Req/Term, Opts/Term,
-%%% Return : Status/atom, Req/Term, Opts/term
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Function : execute_access_policy
-%%% Params : Status/atom, Req/Term
-%%% Return : Status/atom, Req/Term, Opts/term
-%%%==========================================================================================================
+%%--------------------------------------------------------------------
+%% @doc Executes a Chain of access policy modules, and returns their results.
+%% @spec evaluate_access_policy(atom(), list(), term(), term()) -> {atom(), term(), list()}
+%% @end
+%%--------------------------------------------------------------------
 
 evaluate_access_policy(Status,[],Req,Opts) ->
   {Status, Req, Opts};
@@ -78,6 +74,12 @@ evaluate_access_policy(ok, [Policy|T], Req, Opts) ->
   {Status, Req1, Opts1} = apply(Policy, execute, [Req]),
   evaluate_access_policy(Status, T, Req1, [Opts1 | Opts]).
 
+%%--------------------------------------------------------------------
+%% @doc Evaluate & Executes a Chain of access policy modules, and returns their results.
+%% @spec evaluate_access_policy(list(), term()) -> {atom(), term(), list()}
+%% @end
+%%--------------------------------------------------------------------
+
 execute_access_policy([true], Req) ->
   {ok, Req, []};
 execute_access_policy([false], Req) ->
@@ -85,11 +87,11 @@ execute_access_policy([false], Req) ->
 execute_access_policy(PolicyModuleList, Req) ->
   evaluate_access_policy(ok, PolicyModuleList, Req, []).
 
-%%%==========================================================================================================
-%%% Function : get_action_policy
-%%% Params : Status/atom, Action/binary, PolicyMap/Term, Default/atom
-%%% Return : ModuleName/atom
-%%%==========================================================================================================
+%%--------------------------------------------------------------------
+%% @doc Get the access policy for the action in the route path. If it's not present, then the controller default policy, if declared, is used. Else, Global Access Policy or All Public Access is defined
+%% @spec get_action_policy(atom(), binary(), term(), list()) -> list()
+%% @end
+%%--------------------------------------------------------------------
 
 get_action_policy(error, _, _, GlobalDefault) ->
   GlobalDefault;
@@ -103,11 +105,11 @@ get_action_policy(ok, Action, PolicyMap, GlobalDefault) ->
       ActionPolicyModuleList
   end.
 
-%%%==========================================================================================================
-%%% Function : get_policies
-%%% Params : Controller/binary, Action/binary
-%%% Return : ModuleName/atom
-%%%==========================================================================================================
+%%--------------------------------------------------------------------
+%% @doc Get/Load the Access Policy for the server from the policies module. The Server crashes if no policies module is provided.
+%% @spec get_policies(binary(), binary()) -> list()
+%% @end
+%%--------------------------------------------------------------------
 
 get_policies(Controller, Action) ->
   Policies = policies:get(),
@@ -119,6 +121,12 @@ get_policies(Controller, Action) ->
                                                         end,
   PolicyModuleNameList = get_action_policy(ControllerPolicyFoundStatus, Action, ControllerPolicyMap, GlobalDefaultPolicy),
   PolicyModuleNameList.
+
+%%--------------------------------------------------------------------
+%% @doc Cowboy Handler to route the request to the correct Controller/Action, after evaluating the access policy
+%% @spec handle(term(), term()) -> {atom(),term(),term()}
+%% @end
+%%--------------------------------------------------------------------
 
 handle(Req, State=#state{}) ->
   {Method, Req1} = cowboy_req:method(Req),
