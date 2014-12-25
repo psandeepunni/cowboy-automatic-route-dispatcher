@@ -92,15 +92,16 @@ execute_access_policy(PolicyModuleList, Req) ->
 %%%==========================================================================================================
 
 get_action_policy(error, Action, PolicyMap, Default) ->
-  [Default];
+  Default;
 get_action_policy(ok, Action, PolicyMap, Default) ->
-  {Status,ActionPolicyModuleList} = maps:find(Action,PolicyMap),
-  case Status of
-    ok ->
-      ActionPolicyModuleList;
+  Result = maps:find(Action,PolicyMap),
+  case Result of
     error ->
-      [Default]
-  end.
+      Default;
+    _ ->
+      {Status,ActionPolicyModuleList} = Result,
+      ActionPolicyModuleList
+    end.
 
 %%%==========================================================================================================
 %%% Function : get_policies
@@ -122,6 +123,7 @@ handle(Req, State=#state{}) ->
   Req2 = cowboy_req:set_resp_header(<<"access-control-allow-methods">>, <<"GET, POST, PUT, DELETE, OPTIONS">>, Req1),
   Req3 = cowboy_req:set_resp_header(<<"access-control-allow-origin">>, <<"*">>, Req2),
   PolicyModuleNameList = get_policies(Req3, Controller, Action),
+  io:format('policy module list : ~p~n',[PolicyModuleNameList]),
   {AccessStatus, Req4, Opts} = execute_access_policy(PolicyModuleNameList, Req3),
   response(AccessStatus, {Method, Controller, Action}, Req4, Opts, State).
 
