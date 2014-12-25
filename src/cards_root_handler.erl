@@ -1,4 +1,4 @@
--module(cards_dealer).
+-module(cards_root_handler).
 -behaviour(cowboy_http_handler).
 
 %% API
@@ -14,15 +14,11 @@ init(_, Req, _Opts) ->
 
 handle(Req, State=#state{}) ->
   {Method, Req1} = cowboy_req:method(Req),
-  {Controller,_} = cowboy_req:binding(controller, Req1),
-  {Action,_} = cowboy_req:binding(action, Req1, <<"index">>),
-  io:format("Controller : ~p, Action : ~p, Method : ~p~n",[Controller,Action,Method]),
   Req2 = cowboy_req:set_resp_header(<<"access-control-allow-methods">>, <<"GET, POST, PUT, DELETE, OPTIONS">>, Req1),
   Req3 = cowboy_req:set_resp_header(<<"access-control-allow-origin">>, <<"*">>, Req2),
-  PolicyModuleNameList = access_policy:get(Controller, Action),
+  PolicyModuleNameList = access_policy:get(<<"httproot">>, <<"index">>),
   {AccessStatus, Req4, Opts} = access_policy:evaluate(PolicyModuleNameList, Req3),
-  cards_res:reply(AccessStatus, {Method, Controller, Action}, Req4, Opts, State).
-
+  cards_res:reply(AccessStatus, {Method, <<"httproot">>, <<"index">>}, Req4, Opts, State).
 
 terminate(_Reason, _Req, _State) ->
   ok.
