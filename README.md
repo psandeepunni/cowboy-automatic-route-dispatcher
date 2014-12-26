@@ -9,9 +9,9 @@ A  Rest Framework based on rails with Sync. Cards use a simple filename based co
 4. ```/:controllerThree/:actionTwo/[:extras]``` will translate to ```controllerThree_controller.erl:actionTwo(Method, Req, Options)``` with the rest of the URL in ```extras``` binding,
 where Method is a bitstring representing the METHOD header of an http request and Req is a cowboy Request Object.
 
-#### Defining View/Root Controllers
+#### Defining Controllers
 
-A root controller is an erlang module with the naming convention of name_controller.erl. Adding a root controller, will result in automatic route binding of /name to the controller. Adding APIs, functions with arity 3, to this controller module, will result in automatic secondary path binding, such as, /name/function
+A route controller is an erlang module with the naming convention of name_controller.erl. Adding APIs, functions with arity 3, to this controller module, will result in automatic secondary path binding, such as, /controller_module_name/function_name
 
 Sample Controller Module
 
