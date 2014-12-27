@@ -49,7 +49,7 @@ evaluate_linked_access_policy(error,_,Req, Opts) ->
   {error, Req, Opts};
 evaluate_linked_access_policy(ok, [Policy|T], Req, Opts) ->
   {Status, Req1, Opts1} = apply(Policy, execute, [Req]),
-  evaluate_linked_access_policy(Status, T, Req1, [Opts1 | Opts]).
+  evaluate_linked_access_policy(Status, T, Req1,  lists:append(Opts,Opts1)).
 
 %%--------------------------------------------------------------------
 %% @doc Evaluate and Executes a Chain of access policy modules, and returns their results.
