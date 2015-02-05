@@ -19,10 +19,11 @@ handle(Req, State=#state{}) ->
   io:format("Controller : ~p, Action : ~p, Method : ~p~n",[Controller,Action,Method]),
   Req2 = cowboy_req:set_resp_header(<<"access-control-allow-methods">>, <<"GET, POST, PUT, DELETE, OPTIONS">>, Req1),
   Req3 = cowboy_req:set_resp_header(<<"access-control-allow-origin">>, <<"*">>, Req2),
-  Req4 = cowboy_req:set_resp_header(<<"access-control-allow-headers">>, <<"*">>, Req3),
+  {RequestHeaders, Req4} = cowboy_req:header(<<"access-control-request-headers">>, Req3, <<"*">>),
+  Req5 = cowboy_req:set_resp_header(<<"access-control-allow-headers">>, RequestHeaders, Req4),
   PolicyModuleNameList = access_policy:get(Controller, Action),
-  {AccessStatus, Req5, Opts} = access_policy:evaluate(PolicyModuleNameList, Req4),
-  cards_res:reply(AccessStatus, {Method, Controller, Action}, Req5, Opts, State).
+  {AccessStatus, Req6, Opts} = access_policy:evaluate(PolicyModuleNameList, Req5),
+  cards_res:reply(AccessStatus, {Method, Controller, Action}, Req6, Opts, State).
 
 
 terminate(_Reason, _Req, _State) ->

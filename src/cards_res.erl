@@ -44,8 +44,9 @@ reply(error, _, Req, _, State) ->
   {ok, Req1} = cowboy_req:reply(200,[],<<"you are not authorized to access the api">>, Req),
   {ok, Req1, State};
 reply(ok, {<<"OPTIONS">>, _, _}, Req, _, State) ->
-  {Status, Req1} = cowboy_req:reply(200,[{<<"Access-Control-Allow-Headers">>,<<"*">>}],<<"">>,Req),
-  {Status, Req1, State};
+  {RequestHeaders, Req1} = cowboy_req:header(<<"access-control-request-headers">>, Req, <<"*">>),
+  {Status, Req2} = cowboy_req:reply(200,[{<<"access-control-allow-headers">>,RequestHeaders}],<<"">>,Req1),
+  {Status, Req2, State};
 reply(ok, {Method, Controller, Action}, Req, Opts, State) ->
   Module = get_module(Controller),
   Func = get_function(Action),
